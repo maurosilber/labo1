@@ -40,6 +40,7 @@ if __name__ == "__main__":
         "LICENSE",
         ".github/workflows/ci.yml",
         ".github/workflows/test-pre-releases.yml",
+        "environment.yml",
     ]:
         replacer.replace_file(Path(file))
     Path(__file__).unlink()

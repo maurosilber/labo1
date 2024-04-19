@@ -1,0 +1,7 @@
+name: {{ project_name }}
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - pip:
+    - -e .
