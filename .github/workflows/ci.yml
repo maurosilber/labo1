@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/{{ project_name }}
+      url: https://pypi.org/p/labo1
     permissions:
       id-token: write
 

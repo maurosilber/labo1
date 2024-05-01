@@ -1,4 +1,4 @@
-name: {{ project_name }}
+name: labo1
 channels:
   - conda-forge
 dependencies:
