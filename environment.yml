@@ -2,6 +2,10 @@ name: labo1
 channels:
   - conda-forge
 dependencies:
+  - matplotlib
+  - numpy
+  - scipy
+  - pytest
   - pip
   - pip:
     - -e .
