@@ -1,6 +1,6 @@
 import inspect
 from dataclasses import dataclass
-from typing import Callable, Sequence
+from typing import Callable, Generic, Sequence, TypeVarTuple
 
 import numpy as np
 import scipy.optimize
@@ -10,10 +10,12 @@ from matplotlib.figure import Figure, SubFigure
 from .plot import with_errorbars, with_residuals
 from .round import to_significant_figures
 
+P = TypeVarTuple("P")
+
 
 @dataclass(frozen=True)
-class Result:
-    func: Callable
+class Result(Generic[*P]):
+    func: Callable[[np.ndarray, *P], np.ndarray]
     params: np.ndarray
     covariance: np.ndarray
     x: np.ndarray
@@ -86,13 +88,13 @@ class Result:
 
 
 def curve_fit(
-    func,
+    func: Callable[[np.ndarray, *P], np.ndarray],
     /,
     x: np.ndarray,
     y: np.ndarray,
     y_err: np.ndarray | None = None,
     *,
-    initial_params=None,
+    initial_params: tuple[*P] | None = None,
     rescale_errors: bool = True,
     **kwargs,
 ):
