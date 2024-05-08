@@ -112,7 +112,7 @@ def curve_fit(
         y,
         p0=initial_params,
         sigma=y_err,
-        absolute_sigma=rescale_errors,
+        absolute_sigma=not rescale_errors,
         **kwargs,
     )
     return Result(func, p, cov, x=x, y=y, y_err=y_err)
