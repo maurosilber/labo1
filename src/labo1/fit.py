@@ -25,7 +25,7 @@ class Result(Generic[*P]):
 
     @property
     def names(self) -> Sequence[str]:
-        return list(inspect.signature(self.func).parameters)[1:]
+        return _get_parameter_names(self.func)
 
     @property
     def errors(self) -> np.ndarray:
