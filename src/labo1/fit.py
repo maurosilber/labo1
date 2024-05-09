@@ -39,7 +39,7 @@ class Result(Generic[*P]):
     def plot(
         self,
         *,
-        x_eval: np.ndarray | None = None,
+        x_eval: int | np.ndarray | None = None,
         x_err: np.ndarray | None = None,
         label: str | None = None,
         fig: Figure | SubFigure | None = None,

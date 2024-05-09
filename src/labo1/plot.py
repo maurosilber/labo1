@@ -14,7 +14,7 @@ def with_errorbars(
     *,
     x_err: np.ndarray | None = None,
     y_err: np.ndarray | None = None,
-    x_eval: np.ndarray | None = None,
+    x_eval: int | np.ndarray | None = None,
     label: str | None = None,
     fig: Figure | SubFigure | None = None,
     axes: Axes | None = None,
@@ -28,6 +28,9 @@ def with_errorbars(
 
     if x_eval is None:
         x_eval = x
+    elif isinstance(x_eval, int):
+        x_eval = np.linspace(np.min(x), np.max(x), x_eval)
+        x_eval = cast(np.ndarray, x_eval)
 
     (line,) = axes.plot(x_eval, func(x_eval, *params), label=label)
     axes.errorbar(x, y, xerr=x_err, yerr=y_err, fmt="o", color=line.get_color())
