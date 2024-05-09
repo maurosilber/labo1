@@ -40,6 +40,7 @@ class Result(Generic[*P]):
         *,
         x_eval: np.ndarray | None = None,
         x_err: np.ndarray | None = None,
+        label: str | None = None,
         fig: Figure | SubFigure | None = None,
         axes: Axes | None = None,
     ):
@@ -51,6 +52,7 @@ class Result(Generic[*P]):
             y_err=self.y_err,
             x_err=x_err,
             x_eval=x_eval,
+            label=label,
             fig=fig,
             axes=axes,
         )
@@ -60,6 +62,7 @@ class Result(Generic[*P]):
         *,
         x_eval: np.ndarray | None = None,
         x_err: np.ndarray | None = None,
+        label: str | None = None,
         fig: Figure | SubFigure | None = None,
         axes: Sequence[Axes] | None = None,
     ):
@@ -71,6 +74,7 @@ class Result(Generic[*P]):
             y_err=self.y_err,
             x_err=x_err,
             x_eval=x_eval,
+            label=label,
             fig=fig,
             axes=axes,
         )

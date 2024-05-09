@@ -15,6 +15,7 @@ def with_errorbars(
     x_err: np.ndarray | None = None,
     y_err: np.ndarray | None = None,
     x_eval: np.ndarray | None = None,
+    label: str | None = None,
     fig: Figure | SubFigure | None = None,
     axes: Axes | None = None,
 ) -> tuple[Figure | SubFigure, Axes]:
@@ -28,7 +29,7 @@ def with_errorbars(
     if x_eval is None:
         x_eval = x
 
-    (line,) = axes.plot(x_eval, func(x_eval, *params))
+    (line,) = axes.plot(x_eval, func(x_eval, *params), label=label)
     axes.errorbar(x, y, xerr=x_err, yerr=y_err, fmt="o", color=line.get_color())
     fig = cast(Figure | SubFigure, axes.figure)
     return fig, axes
@@ -43,6 +44,7 @@ def with_residuals(
     x_err: np.ndarray | None = None,
     y_err: np.ndarray | None = None,
     x_eval: np.ndarray | None = None,
+    label: str | None = None,
     fig: Figure | SubFigure | None = None,
     axes: Sequence[Axes] | None = None,
 ) -> tuple[Figure | SubFigure, Sequence[Axes]]:
@@ -63,7 +65,7 @@ def with_residuals(
 
     residuals = y - func(x, *params)
 
-    (line,) = axes[0].plot(x_eval, func(x_eval, *params))
+    (line,) = axes[0].plot(x_eval, func(x_eval, *params), label=label)
     axes[1].axhline(0, color="gray")
 
     color = line.get_color()
