@@ -1,6 +1,7 @@
 import inspect
 from dataclasses import dataclass
-from typing import Callable, Generic, Sequence, TypeVarTuple
+from typing import Callable, Generic, Mapping, Sequence, TypeVarTuple
+from warnings import warn
 
 import numpy as np
 import scipy.optimize
@@ -98,7 +99,7 @@ def curve_fit(
     y: np.ndarray,
     y_err: np.ndarray | None = None,
     *,
-    initial_params: tuple[*P] | None = None,
+    initial_params: tuple[*P] | Mapping[str, float] | None = None,
     rescale_errors: bool = True,
     **kwargs,
 ):
@@ -112,6 +113,14 @@ def curve_fit(
     >>> curve_fit(f, np.array([0, 1, 2]), np.array([0.1, 0.9, 2.1]))
     Result(a=1.00 ± 0.71, b=0.03 ± 0.91)
     """
+    if isinstance(initial_params, Mapping):
+        names = _get_parameter_names(func)
+        unused_params = initial_params.keys() - names
+        if len(unused_params) > 0:
+            warn(f"unused parameters: {unused_params}")
+
+        initial_params = [initial_params.get(name, 1) for name in names]  # type: ignore
+
     p, cov = scipy.optimize.curve_fit(
         func,
         x,
@@ -122,3 +131,7 @@ def curve_fit(
         **kwargs,
     )
     return Result(func, p, cov, x=x, y=y, y_err=y_err)
+
+
+def _get_parameter_names(func: Callable) -> Sequence[str]:
+    return list(inspect.signature(func).parameters)[1:]
