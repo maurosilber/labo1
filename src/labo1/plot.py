@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Sequence, cast
+from typing import Sequence, Union, cast
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,7 +36,7 @@ def with_errorbars(
 
     (line,) = axes.plot(x_eval, func(x_eval, *params), label=label)
     axes.errorbar(x, y, xerr=x_err, yerr=y_err, fmt="o", color=line.get_color())
-    fig = cast(Figure | SubFigure, axes.figure)
+    fig = cast(Union[Figure, SubFigure], axes.figure)
     return fig, axes
 
 
@@ -78,5 +78,5 @@ def with_residuals(
     axes[0].errorbar(x, y, xerr=x_err, yerr=y_err, fmt="o", color=color)
     axes[1].errorbar(x, residuals, xerr=x_err, yerr=y_err, fmt="o", color=color)
 
-    fig = cast(Figure | SubFigure, axes[0].figure)
+    fig = cast(Union[Figure, SubFigure], axes[0].figure)
     return fig, axes
