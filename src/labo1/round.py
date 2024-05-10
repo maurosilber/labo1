@@ -29,14 +29,18 @@ def to_significant_figures(
 ):
     """Rounds to `n` significant figures based on the uncertainty `dx`.
 
-    >>> to_significant_figures(0.1234, n=2)
-    '0.12'
-    >>> to_significant_figures(12.34, n=2)
-    '12'
-    >>> to_significant_figures(1234, n=2)
-    '1200'
-    >>> to_significant_figures(12.34, 5.678, n=2)
-    ('12.3', '5.7')
+    Parameters:
+        n: Number of significant figures.
+
+    Examples:
+        >>> to_significant_figures(0.1234, n=2)
+        '0.12'
+        >>> to_significant_figures(12.34, n=2)
+        '12'
+        >>> to_significant_figures(1234, n=2)
+        '1200'
+        >>> to_significant_figures(12.34, 5.678, n=2)
+        ('12.3', '5.7')
     """
     if dx is None:
         return to_significant_figures(x, x, n=n)[0]

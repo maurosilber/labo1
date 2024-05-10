@@ -25,10 +25,16 @@ class Result(Generic[*P]):
 
     @property
     def names(self) -> Sequence[str]:
+        """Names of the parameters.
+
+        Extracted from the function signature."""
         return _get_parameter_names(self.func)
 
     @property
     def errors(self) -> np.ndarray:
+        """Standard deviation for the parameters.
+
+        The square-root of the diagonal of the covariance matrix."""
         return np.sqrt(np.diag(self.covariance))
 
     def __getitem__(self, item: int | str) -> tuple[float, float]:
@@ -44,7 +50,23 @@ class Result(Generic[*P]):
         label: str | None = None,
         fig: Figure | SubFigure | None = None,
         axes: Axes | None = None,
-    ):
+    ) -> tuple[Figure | SubFigure, Axes]:
+        """Errorbar plot of the data and line plot of the function.
+
+        Parameters:
+            x_eval: Evaluation points for the line plot of the function.
+            For an `int`, it generates equispaced points between the minimum and maximum of `x`.
+            By default, `x_eval = x`.
+            x_err: Error bars for `x`.
+            label: Name of the line plot for the legend.
+            axes: Axes on which to plot.
+            By default, creates a new axes on `fig`.
+            fig: Figure on which to create the `axes`.
+            By default, creates a new figure.
+
+        Returns:
+            The axes on which it plotted and its corresponding figure.
+        """
         return with_errorbars(
             self.func,
             self.params,
@@ -66,7 +88,23 @@ class Result(Generic[*P]):
         label: str | None = None,
         fig: Figure | SubFigure | None = None,
         axes: Sequence[Axes] | None = None,
-    ):
+    ) -> tuple[Figure | SubFigure, Sequence[Axes]]:
+        """Errorbar plot of the data and residuals, and line plot of the function.
+
+        Parameters:
+            x_eval: Evaluation points for the line plot of the function.
+            For an `int`, it generates equispaced points between the minimum and maximum of `x`.
+            By default, `x_eval = x`.
+            x_err: Error bars for `x`.
+            label: Name of the line plot for the legend.
+            axes: Axes on which to plot.
+            By default, creates a new axes on `fig`.
+            fig: Figure on which to create the `axes`.
+            By default, creates a new figure.
+
+        Returns:
+            The axes on which it plotted and its corresponding figure.
+        """
         return with_residuals(
             self.func,
             self.params,
@@ -105,13 +143,27 @@ def curve_fit(
 ):
     """Use non-linear least squares to fit a function to data.
 
-    Returns a Result object with the parameters, errors,
+    Returns a `Result` object with the parameters, errors,
     and methods to quickly plot the fit.
 
-    >>> def f(x, a, b):
-    ...     return a * x + b
-    >>> curve_fit(f, np.array([0, 1, 2]), np.array([0.1, 0.9, 2.1]))
-    Result(a=1.00 ± 0.71, b=0.03 ± 0.91)
+    Parameters:
+        func: The function to fit. Its signature must start with the independent variable `x`
+        followed by its N parameters to fit: `f(x, p_0, p_1, ...)`.
+        y_err: Errors or uncertainties for `y`.
+        initial_params: Initial guess for the parameters.
+        A sequence of length N or a mapping of names to values,
+        where omitted values default to 1.
+        rescale_errors: Whether to estimate a scale factor for the errors based on the residuals.
+        **kwargs: Passed to scipy.optimize.curve_fit.
+
+    Examples:
+        >>> def f(x, a, b):
+        ...     return a * x + b
+        ...
+        >>> x = np.array([0.0, 1.0, 2.0])
+        >>> y = np.array([0.0, 0.9, 2.1])
+        >>> curve_fit(f, x, y)
+        Result(a=1.050 ± 0.087, b=-0.05 ± 0.11)
     """
     if isinstance(initial_params, Mapping):
         names = _get_parameter_names(func)

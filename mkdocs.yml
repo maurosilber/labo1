@@ -1,0 +1,29 @@
+site_name: labo1
+repo_url: https://github.com/maurosilber/labo1
+
+theme:
+  name: "material"
+
+nav:
+  - index.py
+  - Ajustes:
+    - ajustes/basico.py
+    - ajustes/ponderado.py
+    - ajustes/no-lineal.py
+    - ajustes/graficos.py
+  - API.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_bases: false
+            show_root_heading: true
+            show_signature: true
+            show_signature_annotations: true
+            separate_signature: true
+            line_length: 100
+  - mkdocs-jupyter:
+      execute: true

@@ -6,6 +6,13 @@ dependencies:
   - numpy
   - scipy
   - pytest
+  - mkdocs
+  - mkdocs-material
+  - mkdocstrings
+  - mkdocstrings-python
+  - black
+  - jupyter
   - pip
   - pip:
+    - mkdocs-jupyter  # conda version is missing assets
     - -e .
