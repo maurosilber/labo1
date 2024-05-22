@@ -9,6 +9,7 @@ import numpy as np
 import scipy.optimize
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure, SubFigure
+from numpy.typing import ArrayLike
 
 from .plot import with_errorbars, with_residuals
 from .round import to_significant_figures
@@ -133,9 +134,9 @@ class Result:
 def curve_fit(
     func: Callable[..., np.ndarray],
     /,
-    x: np.ndarray,
-    y: np.ndarray,
-    y_err: np.ndarray | None = None,
+    x: ArrayLike,
+    y: ArrayLike,
+    y_err: ArrayLike | None = None,
     *,
     initial_params: Sequence[float] | Mapping[str, float] | None = None,
     rescale_errors: bool = True,
@@ -165,6 +166,14 @@ def curve_fit(
         >>> curve_fit(f, x, y)
         Result(a=1.050 ± 0.087, b=-0.05 ± 0.11)
     """
+    # accept ArrayLike
+    x = np.asarray(x)
+    y = np.asarray(y)
+    if y_err is None:
+        y_err = np.ones_like(y)  # assume equal errors
+    else:
+        y_err = np.asarray(y_err)
+
     if isinstance(initial_params, Mapping):
         names = _get_parameter_names(func)
         unused_params = initial_params.keys() - names
