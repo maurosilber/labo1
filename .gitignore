@@ -10,3 +10,6 @@ __pycache__/
 build/
 dist/
 *.egg*
+
+# Docs
+site/

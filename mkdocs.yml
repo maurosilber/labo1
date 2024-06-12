@@ -15,6 +15,8 @@ nav:
 
 plugins:
   - search
+  - mike:
+      canonical_version: latest
   - mkdocstrings:
       handlers:
         python:
@@ -27,3 +29,8 @@ plugins:
             line_length: 100
   - mkdocs-jupyter:
       execute: true
+
+extra:
+  version:
+    alias: true
+    provider: mike
