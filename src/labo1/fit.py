@@ -19,10 +19,12 @@ from .round import to_significant_figures
 class Result:
     func: Callable[..., np.ndarray]
     params: np.ndarray
+    "Optimal parameters found by least squares."
     covariance: np.ndarray
+    "Covariance matrix of the parameters."
     x: np.ndarray
     y: np.ndarray
-    y_err: np.ndarray | None
+    y_err: np.ndarray
 
     @property
     def names(self) -> Sequence[str]:
@@ -118,6 +120,35 @@ class Result:
             fig=fig,
             axes=axes,
         )
+
+    @property
+    def residuals(self):
+        """The difference between the measured and predicted `y`.
+
+        $$ r_i = y_i - f(x_i) $$
+        """
+        return self.y - self.func(self.x, *self.params)
+
+    @property
+    def standardized_residuals(self):
+        """Residuals divided by their corresponding error."""
+        return self.residuals / self.y_err
+
+    @property
+    def chi2(self):
+        r"""Sum of the standardized squared residuals.
+
+        $$ \chi^2 = \sum_i (\frac{r_i}{y_{err}_i})^2 $$
+        """
+        return np.sum(self.standardized_residuals**2)
+
+    @property
+    def reduced_chi2(self):
+        """χ² divided by the degree of freedom.
+
+        The degree of freedom is the number of measuments minus the number of fitter parameters.
+        """
+        return self.chi2 / (np.size(self.y) - np.size(self.params))
 
     def __str__(self):
         values = {
