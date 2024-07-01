@@ -5,17 +5,17 @@
 # El objeto `Result` tiene dos métodos para realizar gráficos:
 #
 # - `.plot()`, que realiza un gráfico de las mediciones y el ajuste,
-# - `.plot_with_residuals()`, que añade un gråfico de los residuos.
+# - `.plot_with_residuals()`, que añade un gráfico de los residuos.
 #
 # En ambos casos,
 # se incluye barras de error en `y` si fueron parte del ajuste.
 #
 # Además,
 # aceptan los siguientes parámetros:
-# - `x_err`, para gráficar barras de error en `x`,
+# - `x_err`, para graficar barras de error en `x`,
 # - `x_eval`, para evaluar la función ajustada en más puntos,
 # - `label`, para darle un nombre a la curva del ajuste en la leyenda,
-# - `fig` y `axes`, que permiten gráficar sobre un g®afico ya existente.
+# - `fig` y `axes`, que permiten graficar sobre un gráfico ya existente.
 #
 # Generemos y ajustemos unos datos para ver estas distintas opciones:
 
@@ -33,7 +33,7 @@ y = func(x, A=10, w=1)
 
 y = np.random.default_rng(0).normal(y)
 
-result = curve_fit(func, x, y)
+result = curve_fit(func, x, y, estimate_errors=True)
 result
 
 # %% [markdown]
@@ -71,6 +71,6 @@ result.plot(x_eval=np.linspace(-5, 15, 100))
 # y generar una leyenda con `axes.legend`:
 
 # %%
-fig, axes = result.plot(x_eval=20, label="10")
+fig, axes = result.plot(x_eval=10, label="10")
 result.plot(axes=axes, x_eval=100, label="100")
-axes.legend(title="Ajuste")
+axes.legend(title="Puntos\nevaluados")

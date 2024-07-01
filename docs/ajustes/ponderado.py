@@ -1,11 +1,9 @@
 # %% [markdown]
 # # Ajuste ponderado
 #
-# Por defecto,
-# `curve_fit` asume que la incerteza de las mediciones son todos iguales,
-# y las estima a partir de los residuos.
-# Sin embargo,
-# es importante incluir las incertezas cuando estas no son todas iguales:
+# Si los diferentes valores de `y` tienen asociada una incerteza distinta,
+# podemos hacer un ajuste ponderado,
+# para que `curve_fit` le de mayor peso a los valores con menor incerteza.
 
 # %%
 import numpy as np
@@ -18,58 +16,40 @@ def lineal(x, a, b):
 
 x = np.arange(10)
 y = 2 * x + 3
-y[-1] -= 20  # resta 20 al último valor
 y = np.random.default_rng(0).normal(y)
+y[-1] -= 20  # resta 20 al último valor
 
-result = curve_fit(lineal, x, y)
+result = curve_fit(lineal, x, y, estimate_errors=True)
 result.plot()
 result
 
 # %% [markdown]
-# Podemos darle menor importancia a la ültima medición
+# Podemos darle menor importancia a la última medición
 # pasando un vector de incertezas o errores `y_err`:
 
 # %%
-y_err = np.ones(y.size)
-y_err[-1] = 10
+y_err = np.ones_like(y)  # [1, 1, ..., 1, 1]
+y_err[-1] = 10           # [1, 1, ..., 1, 10]
 
 result = curve_fit(lineal, x, y, y_err)
 result.plot()
 result
 
-# %% [markdown]
-# De esta manera, también realiza el gráfico con barras de errores.
 
 # %% [markdown]
 # ### Reescalado de errores
 #
-# Por defecto,
-# `curve_fit` estima los errores a partir de los residuos del ajuste.
-# Esto sucede incluso si le pasamos las incertezas explícitamente.
-#
+# Cuando no conocemos la incerteza real de las mediciones,
+# pero sabemos que son distintas entre sí,
+# podemos combinar el vector de incertezas `y_err` con `estimate_errors`.
+# Esto asume que conocemos la relación o cociente entre incertezas,
 # Por ejemplo,
 # si el vector de errores fuese `y_err = [2, 4, ...]`,
 # interpretaría que la segunda medición tiene el doble de error que la primera,
 # pero usa una versión reescalada de estos para estimar los errores en los parámetros.
-#
-# Podemos ver esto al pasar el vector de errores anterior:
 
 # %%
-curve_fit(lineal, x, y, y_err)
+curve_fit(lineal, x, y, y_err, estimate_errors=True)
 
 # %% [markdown]
-# y el mismo dividido 100:
-
-# %%
-curve_fit(lineal, x, y, y_err / 100)
-
-# %% [markdown]
-# En ambos casos,
-# el error en los parámetros es el mismo.
-#
-# Pero,
-# si conocemos los errores reales y no queremos que los reescale,
-# podemos pedirselo con `rescale_errors=False`:
-
-# %%
-curve_fit(lineal, x, y, y_err / 100, rescale_errors=False)
+# El factor de reescalado es tal que $\chi^2$ reducido es 1.

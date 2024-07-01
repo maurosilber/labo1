@@ -19,9 +19,16 @@ result = curve_fit(
     lineal,
     x=np.array([1.0, 2.0, 3.0, 4.0, 5.0]),
     y=np.array([2.9, 5.0, 6.9, 9.0, 11.0]),
+    estimate_errors=True,
 )
 
 # %% [markdown]
+# donde usamos `estimate_errors=True` para que estime el error en `y`
+# a partir de los residuos del ajuste.
+# Ver la sección de [ajustes ponderados](../ponderado)
+# si los errores son distintos para cada `y`
+# o se conocen los errores.
+#
 # `result` es un objeto que encapsula el resultado del ajuste,
 # mostrándonos los parámetros obtenidos con su error:
 
@@ -71,6 +78,10 @@ result.plot()
 # %%
 fig, ax = result.plot()
 ax.set(xlabel="eje x", ylabel="eje y")
+
+# %% [markdown]
+# En la sección [Graficando el ajuste](../graficos.py),
+# hay más información sobre como graficar.
 
 # %% [markdown]
 # ## Graficar el ajuste con residuos

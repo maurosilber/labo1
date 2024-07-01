@@ -65,7 +65,7 @@ def lineal(x, a, b):
     return a * x + b
 
 
-result = curve_fit(lineal, x, y)
+result = curve_fit(lineal, x, y, estimate_errors=True)
 result.plot()
 result
 

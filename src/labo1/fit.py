@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import inspect
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Callable, Mapping, Sequence
 from warnings import warn
 
@@ -170,7 +170,7 @@ def curve_fit(
     y_err: ArrayLike | None = None,
     *,
     initial_params: Sequence[float] | Mapping[str, float] | None = None,
-    rescale_errors: bool = True,
+    estimate_errors: bool = False,
     **kwargs,
 ):
     """Use non-linear least squares to fit a function to data.
@@ -185,7 +185,8 @@ def curve_fit(
         initial_params: Initial guess for the parameters.
         A sequence of length N or a mapping of names to values,
         where omitted values default to 1.
-        rescale_errors: Whether to estimate a scale factor for the errors based on the residuals.
+        estimate_errors: Whether to estimate a global scale factor for the errors
+        based on the residuals.
         **kwargs: Passed to scipy.optimize.curve_fit.
 
     Examples:
@@ -194,7 +195,7 @@ def curve_fit(
         ...
         >>> x = np.array([0.0, 1.0, 2.0])
         >>> y = np.array([0.0, 0.9, 2.1])
-        >>> curve_fit(f, x, y)
+        >>> curve_fit(f, x, y, estimate_errors=True)
         Result(a=1.050 ± 0.087, b=-0.05 ± 0.11)
     """
     # accept ArrayLike
@@ -202,6 +203,10 @@ def curve_fit(
     y = np.asarray(y)
     if y_err is not None:
         y_err = np.asarray(y_err)
+    elif estimate_errors is False:
+        raise ValueError("y_err cannot be None when estimate_errors is False.")
+    else:
+        y_err = np.ones_like(y)
 
     if isinstance(initial_params, Mapping):
         names = _get_parameter_names(func)
@@ -217,10 +222,16 @@ def curve_fit(
         y,
         p0=initial_params,
         sigma=y_err,
-        absolute_sigma=not rescale_errors,
+        absolute_sigma=not estimate_errors,
         **kwargs,
     )
-    return Result(func, p, cov, x=x, y=y, y_err=y_err)
+    r = Result(func, p, cov, x=x, y=y, y_err=y_err)
+    if estimate_errors:
+        # Errors have already been rescaled inside scipy's curve_fit
+        # to estimate the parameters' errors.
+        # Here, we rescale `y_err` to use later when plotting.
+        r = replace(r, y_err=y_err * r.reduced_chi2**0.5)
+    return r
 
 
 def _get_parameter_names(func: Callable) -> Sequence[str]:

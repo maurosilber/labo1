@@ -11,8 +11,8 @@
 #
 # $$ f(x) = A \cos(\omega x) $$
 #
-# y tratamos de ajustarlos por eseta función,
-# vemos que no ebtiene los parámetros correctos:
+# y tratamos de ajustarlos por esta función,
+# vemos que no obtiene los parámetros correctos:
 
 # %%
 import numpy as np
@@ -25,19 +25,20 @@ def func(x, A, w):
 
 x = np.linspace(0, 10, 100)
 y = func(x, A=10, w=3)
+y_err = 1
 
-y = np.random.default_rng(0).normal(y)
+y = np.random.default_rng(0).normal(y, y_err)
 
-r = curve_fit(func, x, y)
+r = curve_fit(func, x, y, y_err)
 r.plot()
 r
 
 # %% [markdown]
-# Si le pasamos paramétros iniciales cercanos a los reales,
+# Si le pasamos parámetros iniciales cercanos a los reales,
 # vemos que obtiene una mejor aproximación:
 
 # %%
-r = curve_fit(func, x, y, initial_params=(10, 3))
+r = curve_fit(func, x, y, y_err, initial_params=(10, 3))
 r.plot()
 r
 
@@ -47,8 +48,8 @@ r
 # que en el que se definió en la función.
 #
 # También,
-# podemos pasar los paramétros por nombre con un diccionario,
+# podemos pasar los parámetros por nombre con un diccionario,
 # donde los parámetros omitidos toman de valor por defecto `1`:
 
 # %%
-curve_fit(func, x, y, initial_params={"w": 3})
+curve_fit(func, x, y, y_err, initial_params={"w": 3})
