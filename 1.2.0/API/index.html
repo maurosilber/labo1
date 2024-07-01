@@ -855,7 +855,7 @@
     <span class="n">y_err</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">initial_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">estimate_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">rescale_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span>
 </code></pre></div>
@@ -935,17 +935,17 @@ and methods to quickly plot the fit.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
-            <td><code>estimate_errors</code></td>
+            <td><code>rescale_errors</code></td>
             <td>
                   <code>bool</code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Whether to estimate a global scale factor for the errors</p>
+                <p>Whether to estimate a scale factor for the errors based on the residuals.</p>
               </div>
             </td>
             <td>
-                  <code>False</code>
+                  <code>True</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -971,7 +971,7 @@ and methods to quickly plot the fit.</p>
 <span class="gp">...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">,</span> <span class="mf">2.1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">estimate_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">curve_fit</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="go">Result(a=1.050 ± 0.087, b=-0.05 ± 0.11)</span>
 </code></pre></div>
 
@@ -1035,18 +1035,7 @@ and methods to quickly plot the fit.</p>
 <span class="normal">220</span>
 <span class="normal">221</span>
 <span class="normal">222</span>
-<span class="normal">223</span>
-<span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">curve_fit</span><span class="p">(</span>
+<span class="normal">223</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">curve_fit</span><span class="p">(</span>
     <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
     <span class="o">/</span><span class="p">,</span>
     <span class="n">x</span><span class="p">:</span> <span class="n">ArrayLike</span><span class="p">,</span>
@@ -1054,7 +1043,7 @@ and methods to quickly plot the fit.</p>
     <span class="n">y_err</span><span class="p">:</span> <span class="n">ArrayLike</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">initial_params</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="n">Mapping</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">estimate_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="n">rescale_errors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Use non-linear least squares to fit a function to data.</span>
@@ -1069,8 +1058,7 @@ and methods to quickly plot the fit.</p>
 <span class="sd">        initial_params: Initial guess for the parameters.</span>
 <span class="sd">        A sequence of length N or a mapping of names to values,</span>
 <span class="sd">        where omitted values default to 1.</span>
-<span class="sd">        estimate_errors: Whether to estimate a global scale factor for the errors</span>
-<span class="sd">        based on the residuals.</span>
+<span class="sd">        rescale_errors: Whether to estimate a scale factor for the errors based on the residuals.</span>
 <span class="sd">        **kwargs: Passed to scipy.optimize.curve_fit.</span>
 
 <span class="sd">    Examples:</span>
@@ -1079,7 +1067,7 @@ and methods to quickly plot the fit.</p>
 <span class="sd">        ...</span>
 <span class="sd">        &gt;&gt;&gt; x = np.array([0.0, 1.0, 2.0])</span>
 <span class="sd">        &gt;&gt;&gt; y = np.array([0.0, 0.9, 2.1])</span>
-<span class="sd">        &gt;&gt;&gt; curve_fit(f, x, y, estimate_errors=True)</span>
+<span class="sd">        &gt;&gt;&gt; curve_fit(f, x, y)</span>
 <span class="sd">        Result(a=1.050 ± 0.087, b=-0.05 ± 0.11)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># accept ArrayLike</span>
@@ -1087,10 +1075,6 @@ and methods to quickly plot the fit.</p>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">y_err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">y_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">y_err</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">estimate_errors</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;y_err cannot be None when estimate_errors is False.&quot;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">y_err</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">initial_params</span><span class="p">,</span> <span class="n">Mapping</span><span class="p">):</span>
         <span class="n">names</span> <span class="o">=</span> <span class="n">_get_parameter_names</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
@@ -1106,16 +1090,10 @@ and methods to quickly plot the fit.</p>
         <span class="n">y</span><span class="p">,</span>
         <span class="n">p0</span><span class="o">=</span><span class="n">initial_params</span><span class="p">,</span>
         <span class="n">sigma</span><span class="o">=</span><span class="n">y_err</span><span class="p">,</span>
-        <span class="n">absolute_sigma</span><span class="o">=</span><span class="ow">not</span> <span class="n">estimate_errors</span><span class="p">,</span>
+        <span class="n">absolute_sigma</span><span class="o">=</span><span class="ow">not</span> <span class="n">rescale_errors</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">r</span> <span class="o">=</span> <span class="n">Result</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">y_err</span><span class="o">=</span><span class="n">y_err</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">estimate_errors</span><span class="p">:</span>
-        <span class="c1"># Errors have already been rescaled inside scipy&#39;s curve_fit</span>
-        <span class="c1"># to estimate the parameters&#39; errors.</span>
-        <span class="c1"># Here, we rescale `y_err` to use later when plotting.</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">replace</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">y_err</span><span class="o">=</span><span class="n">y_err</span> <span class="o">*</span> <span class="n">r</span><span class="o">.</span><span class="n">reduced_chi2</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">r</span>
+    <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">cov</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">y_err</span><span class="o">=</span><span class="n">y_err</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
