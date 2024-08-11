@@ -45,6 +45,10 @@ class Result:
             item = self.names.index(item)
         return self.params[item], self.errors[item]
 
+    def eval(self, x: np.ndarray, /) -> np.ndarray:
+        """Evaluates the function with the parameters."""
+        return self.func(x, *self.params)
+
     def plot(
         self,
         *,
@@ -127,7 +131,7 @@ class Result:
 
         $$ r_i = y_i - f(x_i) $$
         """
-        return self.y - self.func(self.x, *self.params)
+        return self.y - self.eval(self.x)
 
     @property
     def standardized_residuals(self):
