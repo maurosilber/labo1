@@ -2,16 +2,16 @@ from __future__ import annotations
 
 import inspect
 from dataclasses import dataclass, replace
-from typing import Callable, Mapping, Sequence
+from typing import Callable, Mapping, Sequence, Union, cast
 from warnings import warn
 
+import matplotlib.pyplot as plt
 import numpy as np
 import scipy.optimize
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure, SubFigure
-from numpy.typing import ArrayLike
+from numpy.typing import ArrayLike, NDArray
 
-from .plot import with_errorbars, with_residuals
 from .round import to_significant_figures
 
 
@@ -49,82 +49,6 @@ class Result:
         """Evaluates the function with the parameters."""
         return self.func(x, *self.params)
 
-    def plot(
-        self,
-        *,
-        x_eval: int | np.ndarray | None = None,
-        x_err: np.ndarray | None = None,
-        label: str | None = None,
-        fig: Figure | SubFigure | None = None,
-        axes: Axes | None = None,
-    ) -> tuple[Figure | SubFigure, Axes]:
-        """Errorbar plot of the data and line plot of the function.
-
-        Parameters:
-            x_eval: Evaluation points for the line plot of the function.
-            For an `int`, it generates equispaced points between the minimum and maximum of `x`.
-            By default, `x_eval = x`.
-            x_err: Error bars for `x`.
-            label: Name of the line plot for the legend.
-            axes: Axes on which to plot.
-            By default, creates a new axes on `fig`.
-            fig: Figure on which to create the `axes`.
-            By default, creates a new figure.
-
-        Returns:
-            The axes on which it plotted and its corresponding figure.
-        """
-        return with_errorbars(
-            self.func,
-            self.params,
-            self.x,
-            self.y,
-            y_err=self.y_err,
-            x_err=x_err,
-            x_eval=x_eval,
-            label=label,
-            fig=fig,
-            axes=axes,
-        )
-
-    def plot_with_residuals(
-        self,
-        *,
-        x_eval: np.ndarray | None = None,
-        x_err: np.ndarray | None = None,
-        label: str | None = None,
-        fig: Figure | SubFigure | None = None,
-        axes: Sequence[Axes] | None = None,
-    ) -> tuple[Figure | SubFigure, Sequence[Axes]]:
-        """Errorbar plot of the data and residuals, and line plot of the function.
-
-        Parameters:
-            x_eval: Evaluation points for the line plot of the function.
-            For an `int`, it generates equispaced points between the minimum and maximum of `x`.
-            By default, `x_eval = x`.
-            x_err: Error bars for `x`.
-            label: Name of the line plot for the legend.
-            axes: Axes on which to plot.
-            By default, creates a new axes on `fig`.
-            fig: Figure on which to create the `axes`.
-            By default, creates a new figure.
-
-        Returns:
-            The axes on which it plotted and its corresponding figure.
-        """
-        return with_residuals(
-            self.func,
-            self.params,
-            self.x,
-            self.y,
-            y_err=self.y_err,
-            x_err=x_err,
-            x_eval=x_eval,
-            label=label,
-            fig=fig,
-            axes=axes,
-        )
-
     @property
     def residuals(self):
         """The difference between the measured and predicted `y`.
@@ -150,7 +74,8 @@ class Result:
     def reduced_chi2(self):
         """χ² divided by the degree of freedom.
 
-        The degree of freedom is the number of measuments minus the number of fitter parameters.
+        The degree of freedom is the number of measuments
+        minus the number of fitted parameters.
         """
         return self.chi2 / (np.size(self.y) - np.size(self.params))
 
@@ -164,6 +89,117 @@ class Result:
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self})"
+
+    def plot(
+        self,
+        *,
+        x_err: ArrayLike | None = None,
+        x_eval: int | ArrayLike | None = None,
+        label: str | None = None,
+        fig: Figure | SubFigure | None = None,
+        axes: Axes | None = None,
+    ) -> tuple[Figure | SubFigure, Axes]:
+        """Errorbar plot of the data and line plot of the function.
+
+        Parameters:
+            x_eval: Evaluation points for the line plot of the function. For an `int`,
+            it generates equispaced points between the minimum and maximum of `x`.
+            By default, `x_eval = x`.
+            x_err: Error bars for `x`.
+            label: Name of the line plot for the legend.
+            axes: Axes on which to plot.
+            By default, creates a new axes on `fig`.
+            fig: Figure on which to create the `axes`.
+            By default, creates a new figure.
+
+        Returns:
+            The axes on which it plotted and its corresponding figure.
+        """
+        if axes is None:
+            if fig is None:
+                fig = plt.figure()
+            axes = cast(Axes, fig.subplots())
+        elif fig is not None:
+            raise ValueError("specify either `fig` or `axes`")
+
+        if x_eval is None:
+            x_eval = self.x
+        elif isinstance(x_eval, int):
+            x_eval = cast(NDArray, np.linspace(self.x.min(), self.x.max(), x_eval))
+        else:
+            x_eval = np.asarray(x_eval)
+
+        (line,) = axes.plot(x_eval, self.eval(x_eval), label=label)
+        axes.errorbar(
+            self.x, self.y, xerr=x_err, yerr=self.y_err, fmt="o", color=line.get_color()
+        )
+        fig = cast(Union[Figure, SubFigure], axes.figure)
+        return fig, axes
+
+    def plot_with_residuals(
+        self,
+        *,
+        x_err: ArrayLike | None = None,
+        x_eval: int | ArrayLike | None = None,
+        label: str | None = None,
+        fig: Figure | SubFigure | None = None,
+        axes: Sequence[Axes] | None = None,
+    ) -> tuple[Figure | SubFigure, Sequence[Axes]]:
+        """Errorbar plot of the data and residuals, and line plot of the function.
+
+        Parameters:
+            x_eval: Evaluation points for the line plot of the function. For an `int`,
+            it generates equispaced points between the minimum and maximum of `x`.
+            By default, `x_eval = x`.
+            x_err: Error bars for `x`.
+            label: Name of the line plot for the legend.
+            axes: Axes on which to plot.
+            By default, creates a new axes on `fig`.
+            fig: Figure on which to create the `axes`.
+            By default, creates a new figure.
+
+        Returns:
+            The axes on which it plotted and its corresponding figure.
+        """
+        if axes is None:
+            if fig is None:
+                fig = plt.figure()
+            axes = cast(
+                Sequence[Axes],
+                fig.subplots(
+                    nrows=2,
+                    sharex=True,
+                    gridspec_kw={"height_ratios": [2, 1]},
+                ),
+            )
+        elif fig is not None:
+            raise ValueError("specify either `fig` or `axes`")
+        elif len(axes) != 2:
+            raise TypeError("`axes` must be a two-element sequence")
+
+        if x_eval is None:
+            x_eval = self.x
+        elif isinstance(x_eval, int):
+            x_eval = cast(NDArray, np.linspace(self.x.min(), self.x.max(), x_eval))
+        else:
+            x_eval = np.asarray(x_eval)
+
+        residuals = self.y - self.eval(self.x)
+
+        (line,) = axes[0].plot(x_eval, self.eval(x_eval), label=label)
+        axes[1].axhline(0, color="gray")
+
+        color = line.get_color()
+
+        axes[0].errorbar(
+            self.x, self.y, xerr=x_err, yerr=self.y_err, fmt="o", color=color
+        )
+        axes[1].errorbar(
+            self.x, residuals, xerr=x_err, yerr=self.y_err, fmt="o", color=color
+        )
+
+        fig = cast(Union[Figure, SubFigure], axes[0].figure)
+        return fig, axes
 
 
 def curve_fit(
@@ -183,8 +219,8 @@ def curve_fit(
     and methods to quickly plot the fit.
 
     Parameters:
-        func: The function to fit. Its signature must start with the independent variable `x`
-        followed by its N parameters to fit: `f(x, p_0, p_1, ...)`.
+        func: The function to fit. Its signature must start with the independent
+        variable `x` followed by its N parameters to fit: `f(x, p_0, p_1, ...)`.
         y_err: Errors or uncertainties for `y`.
         initial_params: Initial guess for the parameters.
         A sequence of length N or a mapping of names to values,
