@@ -2,6 +2,11 @@
 requires = ["setuptools", "setuptools-scm"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools_scm]
+
 [project]
 name = "labo1"
 authors = [
@@ -9,37 +14,29 @@ authors = [
 ]
 description = ""
 requires-python = ">=3.8"
-keywords = [
+dependencies = [
+    "numpy",
+    "scipy",
+    "matplotlib",
 ]
+keywords = []
 license = { file = "LICENSE" }
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
-    "Topic :: Software Development :: Libraries",
 ]
-dynamic = ["dependencies", "optional-dependencies", "version"]
+dynamic = ["version"]
 
 [project.readme]
 file = "README.md"
 content-type = "text/markdown"
 
-[tool.setuptools.packages.find]
-where = ["src"]
-
-[tool.setuptools.dynamic]
-dependencies = { file = "requirements.txt" }
-optional-dependencies.test = { file = "requirements.test.txt" }
-optional-dependencies.docs = { file = "requirements.docs.txt" }
-
 [project.urls]
 "Homepage" = "https://github.com/maurosilber/labo1"
 "Bug Tracker" = "https://github.com/maurosilber/labo1/issues"
-
-[tool.setuptools_scm]
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"

@@ -1,0 +1,59 @@
+[project]
+name = "labo1"
+channels = ["conda-forge"]
+platforms = ["osx-arm64"]
+
+[pypi-dependencies]
+labo1 = { path = ".", editable = true }
+
+[tasks]
+test-all = """
+pixi run -e test-colab test;
+pixi run -e test-39 test;
+pixi run -e test-310 test;
+pixi run -e test-311 test;
+pixi run -e test-312 test;
+"""
+
+[environments]
+default = ["colab", "docs", "test"]
+docs = ["colab", "docs"]
+test-colab = ["test", "colab"]
+test-39 = ["test", "py39"]
+test-310 = ["test", "py310"]
+test-311 = ["test", "py311"]
+test-312 = ["test", "py312"]
+
+[feature]
+py39.dependencies = { python = "3.9.*" }
+py310.dependencies = { python = "3.10.*" }
+py311.dependencies = { python = "3.11.*" }
+py312.dependencies = { python = "3.12.*" }
+
+[feature.test.dependencies]
+pytest = ">=8.3.2"
+
+[feature.test.tasks]
+test = { cmd="pytest --doctest-modules", inputs=["src/"] }
+
+[feature.colab.dependencies]
+python = "3.10.12"
+numpy = "1.26.4"
+scipy = "1.13.1"
+matplotlib = "3.7.1"
+
+[feature.docs.dependencies]
+mkdocs = ">=1.6.0"
+mkdocs-material = ">=9.5.31"
+mkdocstrings = ">=0.25.2"
+mkdocstrings-python = ">=1.10.7"
+mkdocs-jupyter = ">=0.24.8"
+black = ">=24.4.2"
+jupyter = ">=1.0.0"
+mike = ">=2.1.2"
+backports = ">=1.0"
+"backports.strenum" = ">=1.3.1"
+
+[feature.docs.tasks]
+build-docs = { cmd="mike deploy latest", inputs=["src/", "docs/"], outputs=["docs/"] }
+serve-docs = { cmd="mike serve", depends-on=["build-docs"] }

@@ -1,1 +1,2 @@
 *.py diff=python
+pixi.lock linguist-language=YAML linguist-generated=true
