@@ -17,14 +17,14 @@ from .round import to_significant_figures
 
 @dataclass(frozen=True)
 class Result:
-    func: Callable[..., np.ndarray]
-    params: np.ndarray
+    func: Callable[..., NDArray]
+    params: NDArray
     "Optimal parameters found by least squares."
-    covariance: np.ndarray
+    covariance: NDArray
     "Covariance matrix of the parameters."
-    x: np.ndarray
-    y: np.ndarray
-    y_err: np.ndarray
+    x: NDArray
+    y: NDArray
+    y_err: NDArray
 
     @property
     def names(self) -> Sequence[str]:
@@ -34,7 +34,7 @@ class Result:
         return _get_parameter_names(self.func)
 
     @property
-    def errors(self) -> np.ndarray:
+    def errors(self) -> NDArray:
         """Standard deviation for the parameters.
 
         The square-root of the diagonal of the covariance matrix."""
@@ -45,7 +45,7 @@ class Result:
             item = self.names.index(item)
         return self.params[item], self.errors[item]
 
-    def eval(self, x: np.ndarray, /) -> np.ndarray:
+    def eval(self, x: NDArray, /) -> NDArray:
         """Evaluates the function with the parameters."""
         return self.func(x, *self.params)
 
@@ -203,7 +203,7 @@ class Result:
 
 
 def curve_fit(
-    func: Callable[..., np.ndarray],
+    func: Callable[..., NDArray],
     /,
     x: ArrayLike,
     y: ArrayLike,
