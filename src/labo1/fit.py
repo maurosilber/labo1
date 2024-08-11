@@ -3,7 +3,6 @@ from __future__ import annotations
 import inspect
 from dataclasses import dataclass, replace
 from typing import Callable, Mapping, Sequence, Union, cast
-from warnings import warn
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -252,7 +251,9 @@ def curve_fit(
         names = _get_parameter_names(func)
         unused_params = initial_params.keys() - names
         if len(unused_params) > 0:
-            warn(f"unused parameters: {unused_params}")
+            raise ValueError(
+                f"some initial_params are not function parameters: {unused_params}"
+            )
 
         initial_params = [initial_params.get(name, 1) for name in names]  # type: ignore
 
