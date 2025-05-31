@@ -1,46 +1,47 @@
-[project]
-name = "labo1"
+[workspace]
 channels = ["conda-forge"]
-platforms = ["osx-arm64", "linux-64"]
+platforms = ["osx-arm64", "linux-64", "win-64"]
+preview = ["pixi-build"]
 
-[pypi-dependencies]
-labo1 = { path = ".", editable = true }
-
-[tasks]
-test-all = """
-pixi run -e test-colab test;
-pixi run -e test-39 test;
-pixi run -e test-310 test;
-pixi run -e test-311 test;
-pixi run -e test-312 test;
-"""
+[package.build]
+backend = { name = "pixi-build-python", version = "*" }
+config = { ignore-pypi-mapping = false }  # Enable automatic PyPI-to-conda mapping
 
 [environments]
-default = ["colab", "docs", "test"]
-docs = ["colab", "docs"]
-test-colab = ["test", "colab"]
-test-39 = ["test", "py39"]
-test-310 = ["test", "py310"]
-test-311 = ["test", "py311"]
-test-312 = ["test", "py312"]
+default = ["test", "py310", "lint", "build", "docs"]
+py311 = ["test", "py311"]
+py312 = ["test", "py312"]
+py313 = ["test", "py313"]
+py314 = ["test", "py314"]
+
+[dependencies]
+labo1 = { path = "." }
 
 [feature]
-py39.dependencies = { python = "3.9.*" }
-py310.dependencies = { python = "3.10.*" }
-py311.dependencies = { python = "3.11.*" }
-py312.dependencies = { python = "3.12.*" }
+py310.dependencies.python = "3.10.*"
+py311.dependencies.python = "3.11.*"
+py312.dependencies.python = "3.12.*"
+py313.dependencies.python = "3.13.*"
+py314.dependencies.python = "3.14.*"
 
-[feature.test.dependencies]
-pytest = ">=8.3.2"
+[feature.lint]
+dependencies = {
+  prek = "*",
+  tombi = "*",
+  ruff = "*",
+}
+tasks = { lint = "prek --all-files" }
 
-[feature.test.tasks]
-test = { cmd="pytest --doctest-modules", inputs=["src/"] }
+[feature.build]
+dependencies = { uv = "*" }
+tasks = {
+  build = "uv build",
+  _publish = "uv publish",
+}
 
-[feature.colab.dependencies]
-python = "3.10.12"
-numpy = "1.26.4"
-scipy = "1.13.1"
-matplotlib = "3.7.1"
+[feature.test]
+dependencies = { pytest = "*" }
+tasks = { test = "pytest --doctest-modules" }
 
 [feature.docs.dependencies]
 mkdocs = ">=1.6.0"
@@ -52,8 +53,8 @@ black = ">=24.4.2"
 jupyter = ">=1.0.0"
 mike = ">=2.1.2"
 backports = ">=1.0"
-"backports.strenum" = ">=1.3.1"
+# "backports.strenum" = ">=1.3.1"
 
 [feature.docs.tasks]
-build-docs = { cmd="mike deploy latest", inputs=["src/", "docs/"], outputs=["docs/"] }
-serve-docs = { cmd="mike serve", depends-on=["build-docs"] }
+build-docs = { cmd = "mike deploy latest", inputs = ["src/", "docs/"], outputs = ["docs/"] }
+serve-docs = { cmd = "mike serve", depends-on = ["build-docs"] }

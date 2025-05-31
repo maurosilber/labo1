@@ -1,41 +1,43 @@
-name: Test on push and release if tagged
+name: Test and release when tagged
 
 on: [push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment:
+          - py311
+          - py312
+          - py313
+          - py314
     steps:
-      - uses: actions/checkout@v4
-      - uses: prefix-dev/setup-pixi@v0.8.0
-      - run: pixi run test-all
+      - uses: actions/checkout@main
+      - uses: prefix-dev/setup-pixi@main
+        with:
+          environments: ${{ matrix.environment }}
+      - run: pixi run --environment ${{ matrix.environment }} test
 
-  publish:
-    if: github.ref_type == 'tag'
+  lint-test-build-publish:
     needs: test
+
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/labo1
+      url: https://pypi.org/p/pyfragments
     permissions:
-      id-token: write
+      id-token: write  # for trusted publising to PyPI
 
     steps:
-    - uses: actions/checkout@v4
-
-    - uses: actions/setup-python@v5
-      with:
-        python-version: '3.x'
-        cache: 'pip'
-
-    - name: Upgrade pip
-      run: python -m pip install --upgrade pip
-
-    - name: Install dependencies
-      run: python -m pip install build
-
-    - name: Build package
-      run: python -m build
-
-    - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      - uses: actions/checkout@main
+      - uses: prefix-dev/setup-pixi@main
+      - name: Lint
+        run: pixi run lint
+      - name: Test
+        run: pixi run test
+      - name: Build
+        run: pixi run build
+      - name: Publish to PyPI
+        if: github.ref_type == 'tag'
+        run: pixi run _publish

@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import inspect
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, replace
-from typing import Callable, Mapping, Sequence, Union, cast
+from typing import cast
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -132,7 +133,7 @@ class Result:
         axes.errorbar(
             self.x, self.y, xerr=x_err, yerr=self.y_err, fmt="o", color=line.get_color()
         )
-        fig = cast(Union[Figure, SubFigure], axes.figure)
+        fig = cast(Figure | SubFigure, axes.figure)
         return fig, axes
 
     def plot_with_residuals(
@@ -197,7 +198,7 @@ class Result:
             self.x, residuals, xerr=x_err, yerr=self.y_err, fmt="o", color=color
         )
 
-        fig = cast(Union[Figure, SubFigure], axes[0].figure)
+        fig = cast(Figure | SubFigure, axes[0].figure)
         return fig, axes
 
 

@@ -6,10 +6,5 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# Distribution / packaging
-build/
-dist/
-*.egg*
-
 # Docs
 site/
