@@ -5,7 +5,7 @@ from ..fit import curve_fit
 
 
 def constant(x, A):
-    return A
+    return A * x
 
 
 x = y = y_err = np.arange(1, 5)
@@ -29,7 +29,13 @@ def test_do_not_estimate_errors_by_default():
     curve_fit(constant, x, y, estimate_errors=True)
 
 
-@mark.parametrize("y_err", [1, y_err])
+@mark.parametrize("y_err", [1, y_err, np.diag(y_err)])
 @mark.parametrize("estimate_errors", [False, True])
 def test_estimate_errors(y_err, estimate_errors):
     curve_fit(constant, x, y, y_err, estimate_errors=estimate_errors)
+
+
+@mark.parametrize("y_err", [1, y_err, np.diag(y_err)])
+def test_plot_errors(y_err):
+    r = curve_fit(constant, x, y, y_err)
+    r.plot()

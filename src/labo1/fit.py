@@ -129,9 +129,14 @@ class Result:
         else:
             x_eval = np.asarray(x_eval)
 
+        y_err = self.y_err
+        if np.ndim(y_err) == 2:
+            # Covariance matrix
+            y_err = np.sqrt(np.diag(y_err))
+
         (line,) = axes.plot(x_eval, self.eval(x_eval), label=label)
         axes.errorbar(
-            self.x, self.y, xerr=x_err, yerr=self.y_err, fmt="o", color=line.get_color()
+            self.x, self.y, xerr=x_err, yerr=y_err, fmt="o", color=line.get_color()
         )
         fig = cast(Figure | SubFigure, axes.figure)
         return fig, axes
@@ -184,6 +189,11 @@ class Result:
         else:
             x_eval = np.asarray(x_eval)
 
+        y_err = self.y_err
+        if np.ndim(y_err) == 2:
+            # Covariance matrix
+            y_err = np.sqrt(np.diag(y_err))
+
         residuals = self.y - self.eval(self.x)
 
         (line,) = axes[0].plot(x_eval, self.eval(x_eval), label=label)
@@ -191,11 +201,9 @@ class Result:
 
         color = line.get_color()
 
-        axes[0].errorbar(
-            self.x, self.y, xerr=x_err, yerr=self.y_err, fmt="o", color=color
-        )
+        axes[0].errorbar(self.x, self.y, xerr=x_err, yerr=y_err, fmt="o", color=color)
         axes[1].errorbar(
-            self.x, residuals, xerr=x_err, yerr=self.y_err, fmt="o", color=color
+            self.x, residuals, xerr=x_err, yerr=y_err, fmt="o", color=color
         )
 
         fig = cast(Figure | SubFigure, axes[0].figure)
