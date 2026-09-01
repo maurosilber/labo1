@@ -35,7 +35,7 @@ types = ["python"]
 id = "python-lint"
 name = "Lint Python files with Ruff"
 language = "system"
-entry = "pixi run ruff check"
+entry = "pixi run ruff check --fix"
 types = ["python"]
 
 [[repos.hooks]]

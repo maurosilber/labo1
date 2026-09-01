@@ -8,6 +8,7 @@
 
 # %%
 import numpy as np
+
 from labo1 import curve_fit
 
 

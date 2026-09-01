@@ -7,6 +7,7 @@
 
 # %%
 import numpy as np
+
 from labo1 import curve_fit
 
 
@@ -29,7 +30,7 @@ result
 
 # %%
 y_err = np.ones_like(y)  # [1, 1, ..., 1, 1]
-y_err[-1] = 10           # [1, 1, ..., 1, 10]
+y_err[-1] = 10  # [1, 1, ..., 1, 10]
 
 result = curve_fit(lineal, x, y, y_err)
 result.plot()

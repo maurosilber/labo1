@@ -55,6 +55,7 @@ to_significant_figures(123.456789, 0.00123456789, n=2)
 
 # %%
 import numpy as np
+
 from labo1 import curve_fit
 
 x = np.array([1.0, 2.0, 3.0, 4.0, 5.0])

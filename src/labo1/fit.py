@@ -240,7 +240,6 @@ def curve_fit(
     Examples:
         >>> def f(x, a, b):
         ...     return a * x + b
-        ...
         >>> x = np.array([0.0, 1.0, 2.0])
         >>> y = np.array([0.0, 0.9, 2.1])
         >>> curve_fit(f, x, y, estimate_errors=True)
